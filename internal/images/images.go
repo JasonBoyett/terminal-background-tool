@@ -1,7 +1,6 @@
 package images
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,9 +11,8 @@ import (
 func SetBgImage(bg, from, dst string) error {
   err := clearDir(dst)
   if err != nil { return err }
-  fmt.Println("hello from images")
   src, err := process.Open(filepath.Join(from, "images", bg))
-  if err != nil { panic(err) }
+  if err != nil { return err }
 
   if strings.HasSuffix(dst, "png_images"){
     err := process.Save(

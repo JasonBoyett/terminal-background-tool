@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 
@@ -69,11 +70,9 @@ func GetValidOpts() ([]string, error) {
 	}
 
 	for _, file := range files {
-		if file.IsDir() {
-			continue
+		if !isImage(file.Name()){
+		  opts = append(opts, file.Name())
 		}
-
-		opts = append(opts, file.Name())
 	}
 
 	return opts, nil
@@ -82,8 +81,6 @@ func GetValidOpts() ([]string, error) {
 
 // SetBg sets the background image to the given file in the directory provided by the config file.
 func SetBg(bg string) error{
-  fmt.Println("hello from files")
-  fmt.Println(bg)
   config, err := LoadConfig()
   if err != nil {
     return err
@@ -107,4 +104,38 @@ func SetBg(bg string) error{
 
 
   return nil
+}
+
+// RandomBG sets the background image to a random image in the users image directory.
+func RandomBG() error{
+  choices, err := GetValidOpts()
+  if err != nil { return err }
+  
+  num := rand.Intn(len(choices))
+
+  bgErr := SetBg(choices[num])
+  if bgErr != nil { return err }
+
+  return nil
+}
+
+func isImage(filename string) bool{
+  inputExt := filepath.Ext(filename)
+  imageExtensions := []string{
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".tiff",
+    ".webp",
+    ".svg",
+    ".ico",
+  }
+  for _, ext := range imageExtensions {
+    if inputExt == ext {
+      return true
+    }
+  }
+  return false
 }
