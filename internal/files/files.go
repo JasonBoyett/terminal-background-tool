@@ -3,7 +3,6 @@ package files
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -70,7 +69,7 @@ func GetValidOpts() ([]string, error) {
 	}
 
 	for _, file := range files {
-		if !isImage(file.Name()){
+		if isImage(file.Name()){
 		  opts = append(opts, file.Name())
 		}
 	}
@@ -92,7 +91,6 @@ func SetBg(bg string) error{
   paths := []string{pngPath, jpgPath}
 
   for _, path := range paths {
-    fmt.Println(path)
     if err := os.MkdirAll(path, 0755); err != nil { panic(err) }
 
     if err := images.SetBgImage(

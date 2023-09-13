@@ -58,6 +58,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case "r":
       err := files.RandomBg()
       if err != nil { return m, tea.Quit }
+      return m, tea.Quit
 		case "down", "j":
 			if m.cursor < len(m.choices)-1 {
 				m.cursor++
@@ -102,8 +103,8 @@ func (m model) View() string {
 		}
 	}
 
-  str += "\nPress enter to select."
-  str += "\nPress r to select a random option."
+  str += "\nPress enter to select.\n"
+  str += "Press r to select a random option.\n"
 
 	return str + "Press q to quit.\n"
 }
