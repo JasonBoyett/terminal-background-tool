@@ -106,8 +106,8 @@ func SetBg(bg string) error{
   return nil
 }
 
-// RandomBG sets the background image to a random image in the users image directory.
-func RandomBG() error{
+// RandomBg sets the background image to a random image in the users image directory.
+func RandomBg() error{
   choices, err := GetValidOpts()
   if err != nil { return err }
   
