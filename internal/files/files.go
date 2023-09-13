@@ -1,0 +1,110 @@
+package files
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
+	images "github.com/JasonBoyett/terminal-background-tool/internal/images"
+)
+
+// This struct holds the data for the config.json file
+type Config struct {
+  BgDirectory string `json:"bgDirectory"`
+}
+
+
+
+func SaveConfig(data string) error{
+  fileName := "config.json" 
+
+  config := Config{BgDirectory: data}
+  configData, err := json.MarshalIndent(config, "", "  ")
+  if err != nil {
+    return err
+  }
+  if err := ioutil.WriteFile(fileName, configData, 0644); err != nil {
+    return err
+  }
+  return nil
+}
+
+func LoadConfig() (Config, error){
+  var config Config
+  configFile := "config.json"
+  data, error := ioutil.ReadFile(configFile)
+  if error != nil {
+    return config, error
+  }
+
+  if err := json.Unmarshal(data, &config); err != nil {
+    return config, err
+  }
+  
+  return config, nil
+}
+
+
+// GetValidOpts returns a list of options for the user to choose from.
+func GetValidOpts() ([]string, error) {
+	opts := []string{}
+
+	config, err := LoadConfig()
+	if err != nil {
+		if err.Error() == "open config.json: no such file or directory" {
+			return nil, errors.New("No config.json file found.")
+		}
+
+		return nil, err
+	}
+
+	imagesDir := filepath.Join(config.BgDirectory, "images")
+
+	files, err := ioutil.ReadDir(imagesDir)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
+		opts = append(opts, file.Name())
+	}
+
+	return opts, nil
+}
+
+
+// SetBg sets the background image to the given file in the directory provided by the config file.
+func SetBg(bg string) error{
+  fmt.Println("hello from files")
+  fmt.Println(bg)
+  config, err := LoadConfig()
+  if err != nil {
+    return err
+  }
+  
+  pngPath := filepath.Join(config.BgDirectory, "png_images")
+  jpgPath := filepath.Join(config.BgDirectory, "jpg_images")
+
+  paths := []string{pngPath, jpgPath}
+
+  for _, path := range paths {
+    fmt.Println(path)
+    if err := os.MkdirAll(path, 0755); err != nil { panic(err) }
+
+    if err := images.SetBgImage(
+      bg,
+      config.BgDirectory, 
+      path,
+    ); err != nil { return err }
+  }
+
+
+  return nil
+}
