@@ -71,9 +71,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	standardStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#E0E0E0"))
+		Foreground(lipgloss.Color("#05e2ff"))
 	selectedStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#b007ed"))
+		Foreground(lipgloss.Color("#ffce1f"))
 	viewLen := 5
 
 	str := "Which background would you like to use?\n\n"
