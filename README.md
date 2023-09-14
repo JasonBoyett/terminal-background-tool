@@ -1,18 +1,19 @@
 # Terminal Background Selector
 
 ## Description
-This is a terminal application to help users chose their terminal background 
+This is a terminal application to help users choose their terminal background 
 image from the command line.
 Though this application was built for choosing terminal backgrounds,
-it can be used for any application which renders its background from an image file at a
+it can be used for any application that renders its background from an image file at a
 given path.
 
 
 ## Validated Platforms
 - Kitty
 - Warp
+
 (If you have tested this application on another platform,
-please submit a pull request to update this list and doccument the setup process.)
+please submit a pull request to update this list and document the setup process.)
 
 ## Installation
 1. Make sure you have [Go](https://go.dev/doc/install) installed on your machine.
@@ -27,7 +28,7 @@ please submit a pull request to update this list and doccument the setup process
     ```
 5. Build the application
     ```bash
-    go build src/main/main.go
+    go build cmd/main/main.go
     ```
 6. Run the application
     ```bash
@@ -40,12 +41,12 @@ to use as your background image directory. If this directory does not exist, it 
 automatically be created. If you would like to change this directory, you can do so in the 
 config.json file by changing the "bgDirectory" field.
 
-On initial setup the application will create an "images" directory in the directory you
-specified. This is where you will place your background images. There will be two other directories labled "png_images" and "jpg_images" these will store the current background image.
+On initial setup, the application will create an "images" directory in the directory you
+specified. This is where you will place your background images. There will be two other directories labeled "png_images" and "jpg_images" These will store the current background image.
 
-After initial setup, you can run the application again and will be prompted to chose 
-from a list of background images navigate with your arrow keys or with the j and k keys.
-Press enter to chose an image, r to select one randomly or q to quit.
+After initial setup, you can run the application again and will be prompted to choose 
+from a list of background images. Navigate with your arrow keys or with the j and k keys.
+Press enter to choose an image, r to select one randomly, or q to quit.
 If you would like to add more images, simply place them
 in the "images" directory and run the application again.
 
@@ -56,7 +57,7 @@ background_image [your backgrounds directory]/png_images/current.png
 background_image_layout scaled
 ```
 you will have to replace [your backgrounds directory] with the directory you specified
-when you first ran the application. I would recommend coppying and pasting it from the
+when you first ran the application. I would recommend copying and pasting it from the
 config.json file.
 
 Now after running the application reload kitty and you should see your new background.
