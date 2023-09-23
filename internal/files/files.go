@@ -3,6 +3,8 @@ package files
 import (
 	"encoding/json"
 	"errors"
+	"strings"
+
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -19,8 +21,11 @@ type Config struct {
 
 
 func SaveConfig(data string) error{
-  fileName := "config.json" 
-
+  root, err := os.Executable()
+  if err != nil { return err }
+  root = filepath.Clean(root)
+  root = strings.Trim(root, "main")
+  fileName := filepath.Join(root, "config.json") 
   config := Config{BgDirectory: data}
   configData, err := json.MarshalIndent(config, "", "  ")
   if err != nil {
@@ -34,10 +39,16 @@ func SaveConfig(data string) error{
 
 func LoadConfig() (Config, error){
   var config Config
-  configFile := "config.json"
+  root, err:= os.Executable()
+  root = filepath.Clean(root)
+  root = strings.Trim(root, "main")
+  if err != nil { 
+    return config, errors.New("No config.json file found.") 
+  }
+  configFile := filepath.Join(root, "config.json")
   data, error := ioutil.ReadFile(configFile)
   if error != nil {
-    return config, error
+    return config, errors.New("No config.json file found.") 
   }
 
   if err := json.Unmarshal(data, &config); err != nil {
