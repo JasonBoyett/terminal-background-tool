@@ -31,9 +31,13 @@ func SaveConfig(data string) error{
   if err != nil {
     return err
   }
-  if err := ioutil.WriteFile(fileName, configData, 0644); err != nil {
+  if err = ioutil.WriteFile(fileName, configData, 0644); err != nil {
     return err
   }
+
+  err = os.MkdirAll(filepath.Join(config.BgDirectory, "images"), 0755)
+  if err != nil { return err }
+
   return nil
 }
 

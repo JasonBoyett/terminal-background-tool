@@ -1,8 +1,6 @@
 module github.com/JasonBoyett/terminal-background-tool
 
-go 1.21
-
-toolchain go1.21.0
+go 1.18
 
 require (
 	github.com/charmbracelet/bubbletea v0.24.2
