@@ -28,12 +28,13 @@ please submit a pull request to update this list and document the setup process.
     ```
 5. Build the application
     ```bash
-    go build cmd/main/main.go
+    go build -o bg_picker cmd/main/main.go
     ```
 6. Run the application
     ```bash
-    ./main
+    ./bg_picker
     ```
+7. For the best experience add "bg_picker" to your systems path.
 
 ## Usage
 The first time you run the application it will ask you what directory you would like
