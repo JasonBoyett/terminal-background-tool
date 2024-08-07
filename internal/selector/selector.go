@@ -51,14 +51,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.cursor > 0 {
 				m.cursor--
 			}
-    case "enter":
-      err := files.SetBg(m.choices[m.cursor])
-      if err != nil { return m, tea.Quit }
-      return m, tea.Quit
-    case "r":
-      err := files.RandomBg()
-      if err != nil { return m, tea.Quit }
-      return m, tea.Quit
+		case "enter":
+			err := files.SetBg(m.choices[m.cursor])
+			if err != nil {
+				return m, tea.Quit
+			}
+			return m, tea.Quit
+		case "r":
+			err := files.RandomBg()
+			if err != nil {
+				return m, tea.Quit
+			}
+			return m, tea.Quit
 		case "down", "j":
 			if m.cursor < len(m.choices)-1 {
 				m.cursor++
@@ -103,27 +107,28 @@ func (m model) View() string {
 		}
 	}
 
-  str += "\nPress enter to select.\n"
-  str += "Press r to select a random option.\n"
+	str += "\nPress enter to select.\n"
+	str += "Press r to select a random option.\n"
 
 	return str + "Press q to quit.\n"
 }
 
 func Setup() error {
-  
-  var path string 
 
-  fmt.Println("Let's get your image folder set up")
-  fmt.Println("Where would you like your image folder to be?")
-  fmt.Println("Please provide a path")
+	var path string
 
-  reader := bufio.NewScanner(os.Stdin)
-  if reader.Scan(){
-    path = reader.Text()
-  }
-  if err := files.SaveConfig(path); err != nil {
-    return err
-  }
+	fmt.Println("Let's get your image folder set up")
+	fmt.Println("Where would you like your image folder to be?")
+	fmt.Println("Please provide a path")
 
-  return nil
+	reader := bufio.NewScanner(os.Stdin)
+	if reader.Scan() {
+		path = reader.Text()
+	}
+	if err := files.SaveConfig(path); err != nil {
+		fmt.Println("error in save")
+		return err
+	}
+
+	return nil
 }

@@ -3,9 +3,7 @@ package files
 import (
 	"encoding/json"
 	"errors"
-	"strings"
 
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -15,53 +13,54 @@ import (
 
 // This struct holds the data for the config.json file
 type Config struct {
-  BgDirectory string `json:"bgDirectory"`
+	BgDirectory string `json:"bgDirectory"`
 }
 
+func SaveConfig(data string) error {
+	root, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	root = filepath.Clean(root)
+	root = filepath.Dir(root)
+	fileName := filepath.Join(root, "config.json")
+	config := Config{BgDirectory: data}
+	configData, err := json.MarshalIndent(config, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err = os.WriteFile(fileName, configData, 0644); err != nil {
+		return err
+	}
 
+	err = os.MkdirAll(filepath.Join(config.BgDirectory, "images"), 0755)
+	if err != nil {
+		return err
+	}
 
-func SaveConfig(data string) error{
-  root, err := os.Executable()
-  if err != nil { return err }
-  root = filepath.Clean(root)
-  root = strings.Trim(root, "main")
-  fileName := filepath.Join(root, "config.json") 
-  config := Config{BgDirectory: data}
-  configData, err := json.MarshalIndent(config, "", "  ")
-  if err != nil {
-    return err
-  }
-  if err = ioutil.WriteFile(fileName, configData, 0644); err != nil {
-    return err
-  }
-
-  err = os.MkdirAll(filepath.Join(config.BgDirectory, "images"), 0755)
-  if err != nil { return err }
-
-  return nil
+	return nil
 }
 
-func LoadConfig() (Config, error){
-  var config Config
-  root, err:= os.Executable()
-  root = filepath.Clean(root)
-  root = strings.Trim(root, "main")
-  if err != nil { 
-    return config, errors.New("No config.json file found.") 
-  }
-  configFile := filepath.Join(root, "config.json")
-  data, error := ioutil.ReadFile(configFile)
-  if error != nil {
-    return config, errors.New("No config.json file found.") 
-  }
+func LoadConfig() (Config, error) {
+	var config Config
+	root, err := os.Executable()
+	root = filepath.Clean(root)
+	root = filepath.Dir(root)
+	if err != nil {
+		return config, errors.New("No config.json file found.")
+	}
+	configFile := filepath.Join(root, "config.json")
+	data, error := os.ReadFile(configFile)
+	if error != nil {
+		return config, errors.New("No config.json file found.")
+	}
 
-  if err := json.Unmarshal(data, &config); err != nil {
-    return config, err
-  }
-  
-  return config, nil
+	if err := json.Unmarshal(data, &config); err != nil {
+		return config, err
+	}
+
+	return config, nil
 }
-
 
 // GetValidOpts returns a list of options for the user to choose from.
 func GetValidOpts() ([]string, error) {
@@ -78,77 +77,83 @@ func GetValidOpts() ([]string, error) {
 
 	imagesDir := filepath.Join(config.BgDirectory, "images")
 
-	files, err := ioutil.ReadDir(imagesDir)
+	files, err := os.ReadDir(imagesDir)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, file := range files {
-		if isImage(file.Name()){
-		  opts = append(opts, file.Name())
+		if isImage(file.Name()) {
+			opts = append(opts, file.Name())
 		}
 	}
 
 	return opts, nil
 }
 
-
 // SetBg sets the background image to the given file in the directory provided by the config file.
-func SetBg(bg string) error{
-  config, err := LoadConfig()
-  if err != nil {
-    return err
-  }
-  
-  pngPath := filepath.Join(config.BgDirectory, "png_images")
-  jpgPath := filepath.Join(config.BgDirectory, "jpg_images")
+func SetBg(bg string) error {
+	config, err := LoadConfig()
+	if err != nil {
+		return err
+	}
 
-  paths := []string{pngPath, jpgPath}
+	pngPath := filepath.Join(config.BgDirectory, "png_images")
+	jpgPath := filepath.Join(config.BgDirectory, "jpg_images")
 
-  for _, path := range paths {
-    if err := os.MkdirAll(path, 0755); err != nil { panic(err) }
+	paths := []string{pngPath, jpgPath}
 
-    if err := images.SetBgImage(
-      bg,
-      config.BgDirectory, 
-      path,
-    ); err != nil { return err }
-  }
+	for _, path := range paths {
+		if err := os.MkdirAll(path, 0755); err != nil {
+			panic(err)
+		}
 
+		if err := images.SetBgImage(
+			bg,
+			config.BgDirectory,
+			path,
+		); err != nil {
+			return err
+		}
+	}
 
-  return nil
+	return nil
 }
 
 // RandomBg sets the background image to a random image in the users image directory.
-func RandomBg() error{
-  choices, err := GetValidOpts()
-  if err != nil { return err }
-  
-  num := rand.Intn(len(choices))
+func RandomBg() error {
+	choices, err := GetValidOpts()
+	if err != nil {
+		return err
+	}
 
-  bgErr := SetBg(choices[num])
-  if bgErr != nil { return err }
+	num := rand.Intn(len(choices))
 
-  return nil
+	bgErr := SetBg(choices[num])
+	if bgErr != nil {
+		return err
+	}
+
+	return nil
 }
 
-func isImage(filename string) bool{
-  inputExt := filepath.Ext(filename)
-  imageExtensions := []string{
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".tiff",
-    ".webp",
-    ".svg",
-    ".ico",
-  }
-  for _, ext := range imageExtensions {
-    if inputExt == ext {
-      return true
-    }
-  }
-  return false
+func isImage(filename string) bool {
+	inputExt := filepath.Ext(filename)
+	imageExtensions := []string{
+		".jpg",
+		".jpeg",
+		".png",
+		".gif",
+		".bmp",
+		".tiff",
+		".webp",
+		".svg",
+		".ico",
+	}
+	for _, ext := range imageExtensions {
+		if inputExt == ext {
+			return true
+		}
+	}
+	return false
 }
