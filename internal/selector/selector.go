@@ -7,6 +7,7 @@ import (
 	"os"
 
 	files "github.com/JasonBoyett/terminal-background-tool/internal/files"
+	helpers "github.com/JasonBoyett/terminal-background-tool/internal/helpers"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -95,7 +96,10 @@ func (m model) View() string {
 
 	for i, choice := range m.choices {
 		if i >= start && i <= end {
-			line := choice
+			line, err := helpers.TrimFileExtension(choice)
+			if err != nil {
+				line = choice
+			}
 
 			if i == m.cursor {
 				line = selectedStyle.Render(line)
