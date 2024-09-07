@@ -157,3 +157,12 @@ func isImage(filename string) bool {
 	}
 	return false
 }
+
+func RandomBgFromOpts(opts []string) error {
+	num := rand.Intn(len(opts))
+	bgErr := SetBg(opts[num])
+	if bgErr != nil {
+		return bgErr
+	}
+	return nil
+}
