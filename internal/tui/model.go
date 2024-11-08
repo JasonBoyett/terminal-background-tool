@@ -1,22 +1,28 @@
 package tui
 
-import helpers "github.com/JasonBoyett/terminal-background-tool/internal/helpers"
+import (
+	files "github.com/JasonBoyett/terminal-background-tool/internal/files"
+	helpers "github.com/JasonBoyett/terminal-background-tool/internal/helpers"
+)
 
 type searchState int
 
 const (
-	off searchState = iota
+	start searchState = iota
 	searching
 	selecting
+	postRun
 )
 
 type model struct {
-	cursor          int
-	originalChoices []string
-	choices         []string
-	selected        map[int]struct{}
-	searchState     searchState
-	searchPattern   string
+	config           files.Config
+	cursor           int
+	originalChoices  []string
+	choices          []string
+	selected         map[int]struct{}
+	state            searchState
+	searchPattern    string
+	postRunContainer string
 }
 
 func (m *model) selectChoice() string {
@@ -29,15 +35,15 @@ func (m *model) filterChoices(pattern string) {
 		filteredChoices = m.originalChoices
 	}
 	m.choices = filteredChoices
-	m.searchState = off
+	m.state = start
 }
 
 func (m *model) resetChoices() {
-	if m.searchState == off {
+	if m.state == start {
 		return
 	}
 	m.searchPattern = ""
 	m.cursor = 0
 	m.choices = m.originalChoices
-	m.searchState = off
+	m.state = start
 }

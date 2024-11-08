@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	files "github.com/JasonBoyett/terminal-background-tool/internal/files"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -17,11 +18,17 @@ func EnterTui(options []string) {
 }
 
 func initialModel(options []string) model {
+	config, err := files.LoadConfig()
+	if err != nil {
+		config = files.Config{}
+	}
 	return model{
-		cursor:          0,
-		originalChoices: options,
-		choices:         options,
-		selected:        make(map[int]struct{}),
+		cursor:           0,
+		config:           config,
+		originalChoices:  options,
+		choices:          options,
+		selected:         make(map[int]struct{}),
+		postRunContainer: config.PostRun,
 	}
 }
 
@@ -30,25 +37,29 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch m.searchState {
-	case off:
+	switch m.state {
+	case start:
 		return searchOffUpdate(m, msg)
 	case searching:
 		return searchingUpdate(m, msg)
 	case selecting:
 		return selectingUpdate(m, msg)
+	case postRun:
+		return postRunUpdate(m, msg)
 	}
 	return m, nil
 }
 
 func (m model) View() string {
-	switch m.searchState {
-	case off:
+	switch m.state {
+	case start:
 		return searchOffView(m)
 	case searching:
 		return searchingView(m)
 	case selecting:
 		return selectingView(m)
+	case postRun:
+		return postRunView(m)
 	}
 	return ""
 }

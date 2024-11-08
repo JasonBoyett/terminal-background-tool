@@ -38,7 +38,10 @@ func searchOffUpdate(model model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "/":
 			model.cursor = 0
-			model.searchState = searching
+			model.state = searching
+		case "p":
+			model.cursor = 0
+			model.state = postRun
 		}
 	}
 
@@ -88,6 +91,7 @@ func searchOffView(m model) string {
 	str += "Press " + highlightedStyle.Render("enter") + " to select.\n"
 	str += "Press " + highlightedStyle.Render("r") + " to select a random option.\n"
 	str += "Press " + highlightedStyle.Render("/") + " to enter search mode.\n"
+	str += "Press " + highlightedStyle.Render("p") + " to modify your post run scrip.\n"
 
 	return str + "Press " + highlightedStyle.Render("q") + " to quit.\n"
 }

@@ -11,12 +11,7 @@ import (
 	images "github.com/JasonBoyett/terminal-background-tool/internal/images"
 )
 
-// This struct holds the data for the config.json file
-type Config struct {
-	BgDirectory string `json:"bgDirectory"`
-}
-
-func SaveConfig(data string) error {
+func SaveConfig(bgPath, postRun string) error {
 	root, err := os.Executable()
 	if err != nil {
 		return err
@@ -24,7 +19,7 @@ func SaveConfig(data string) error {
 	root = filepath.Clean(root)
 	root = filepath.Dir(root)
 	fileName := filepath.Join(root, "config.json")
-	config := Config{BgDirectory: data}
+	config := Config{BgDirectory: bgPath, PostRun: postRun}
 	configData, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return err
@@ -115,6 +110,11 @@ func SetBg(bg string) error {
 		); err != nil {
 			return err
 		}
+	}
+
+	if config.PostRun != "" {
+		script := config.GetPostRunScript()
+		script.Run()
 	}
 
 	return nil

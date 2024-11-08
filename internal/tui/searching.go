@@ -20,7 +20,7 @@ func searchingUpdate(model model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		case "enter":
 			model.cursor = 0
-			model.searchState = selecting
+			model.state = selecting
 			break
 		case "backspace":
 			if len(model.searchPattern) > 0 {

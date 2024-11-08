@@ -40,7 +40,7 @@ func selectingUpdate(model model, msg tea.Msg) (tea.Model, tea.Cmd) {
 			model.resetChoices()
 		case "/":
 			model.cursor = 0
-			model.searchState = searching
+			model.state = searching
 		}
 	}
 
